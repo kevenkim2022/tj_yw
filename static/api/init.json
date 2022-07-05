@@ -1,0 +1,122 @@
+{
+  "homeInfo": {
+    "title": "首页",
+    "href": "/static/page/welcome-1.html?t=1"
+  },
+  "logoInfo": {
+    "title": "C段运维",
+    "image": "/static/images/logo.png",
+    "href": ""
+  },
+  "menuInfo": [
+    {
+      "title": "常规管理",
+      "icon": "fa fa-address-book",
+      "href": "",
+      "target": "_self",
+      "child": [
+        {
+          "title": "首页",
+          "href": "",
+          "icon": "fa fa-home",
+          "target": "_self"
+
+        },
+        {
+          "title": "数据查询",
+          "href": "",
+          "icon": "fa fa-file-text",
+          "target": "_self",
+          "child": [
+            {
+              "title": "KPI查询",
+              "href": "",
+              "icon": "fa fa-list-alt",
+              "target": "_self",
+              "href": "/static/page/KpiQuery.html"
+            },
+            {
+              "title": "Abort查询",
+              "href": "",
+              "icon": "fa fa-list-alt",
+              "target": "_self",
+              "href": "/static/page/AbortQuery.html"
+            },
+            {
+              "title": "Art查询",
+              "href": "",
+              "icon": "fa fa-list-alt",
+              "target": "_self",
+              "href": "/static/page/ArtQuery.html"
+            },
+            {
+              "title": "岸桥查询",
+              "href": "",
+              "icon": "fa fa-list-alt",
+              "target": "_self",
+              "href": "/static/page/QcQuery.html"
+            },
+            {
+              "title": "停时记录查询",
+              "href": "",
+              "icon": "fa fa-navicon",
+              "target": "_self",
+              "href": "/static/page/QcTlInterval.html"
+            },
+            {
+              "title": "箱号查询",
+              "href": "",
+              "icon": "fa fa-navicon",
+              "target": "_self",
+              "href": "/static/page/ContainerQuery.html"
+            }
+          ]
+        },
+        {
+          "title": "常用操作",
+          "href": "",
+          "icon": "fa fa-file-text",
+          "target": "_self",
+          "child": [
+            {
+              "title": "Abort单车[场桥]",
+              "href": "",
+              "icon": "fa fa-list-alt",
+              "target": "_self",
+              "href": ""
+            }
+          ]
+        },
+        {
+          "title": "问题及记录",
+          "href": "",
+          "icon": "fa fa-file-text",
+          "target": "_self",
+          "child": [
+            {
+              "title": "日志相关",
+              "href": "",
+              "icon": "fa fa-list-alt",
+              "target": "_self",
+              "href": ""
+            },
+            {
+              "title": "UI相关",
+              "href": "",
+              "icon": "fa fa-list-alt",
+              "target": "_self",
+              "href": ""
+            },
+            {
+              "title": "TOS相关",
+              "href": "",
+              "icon": "fa fa-list-alt",
+              "target": "_self",
+              "href": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
