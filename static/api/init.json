@@ -84,6 +84,20 @@
               "icon": "fa fa-list-alt",
               "target": "_self",
               "href": ""
+            },
+            {
+              "title": "Redis",
+              "href": "",
+              "icon": "fa fa-navicon",
+              "target": "_self",
+              "href": "/static/page/redisList.html"
+            },
+            {
+              "title": "SSH",
+              "href": "",
+              "icon": "fa fa-navicon",
+              "target": "_self",
+              "href": "/static/page/sshList.html"
             }
           ]
         },
@@ -94,25 +108,11 @@
           "target": "_self",
           "child": [
             {
-              "title": "日志相关",
+              "title": "问题记录",
               "href": "",
               "icon": "fa fa-list-alt",
               "target": "_self",
-              "href": ""
-            },
-            {
-              "title": "UI相关",
-              "href": "",
-              "icon": "fa fa-list-alt",
-              "target": "_self",
-              "href": ""
-            },
-            {
-              "title": "TOS相关",
-              "href": "",
-              "icon": "fa fa-list-alt",
-              "target": "_self",
-              "href": ""
+              "href": "/recordList"
             }
           ]
         }

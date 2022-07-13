@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="/static/ckeditor/ckeditor.js"></script>
+    <link rel="stylesheet" href="/static/lib/layui-v2.6.3/css/layui.css" media="all">
+    <script src="/static/lib/jquery-3.4.1/jquery-3.4.1.min.js"></script>
+</head>
+<body>
+    <form action="" method="post">
+        <div class="layui-form layuimini-form">
+            <div class="layui-form-item">
+                <label name="username" hidden="hidden">jcl</label>
+                <label class="layui-form-label">标题</label>
+                <div class="layui-input-block">
+                    <input type="text" name="title" placeholder="标题" value="" id="addtitle" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item layui-form-text">
+                <label class="layui-form-label">内容</label>
+                <div class="layui-input-block">
+                    <textarea name="content" class="layui-textarea ckeditor" placeholder="请输入内容"></textarea>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <div class="layui-input-block">
+                    <button class="layui-btn layui-btn-normal" lay-submit lay-filter="saveBtn" id="addbtn">确认保存</button>
+                </div>
+            </div>
+        </div>
+    </form>
+</body>
+</html>
+<script>
+    var s = CKEDITOR.replace("content");
+    $("#addbtn").on('click',function(){
+        var comments = s.getData();
+        var title = $("#addtitle").val();
+
+       console.log(title);
+       $.ajax({
+          url:"/addrecord",
+          type:"POST",
+          data:{'content':comments,'title':title},
+           success:function(data){
+                window.parent.location.reload();
+                var index = parent.layer.getFrameIndex(window.name);
+                parent.layer.close(index);
+           }
+
+       });
+    });
+</script>

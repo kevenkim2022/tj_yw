@@ -66,8 +66,6 @@ def get_all(start_time, end_time, vessel_id):
     load_data = get_new_res(res_load, load_seqs)
     numb = 1
     result = list()
-    title = ["ID","VEHICLE_PLATE,TOS_RECEIVE_DISPATCH,MISSION_RECEIVE_DISPATCH,VPB_ARRIVE,VPB_FINISHED,QCTP_X_ARRIVED,QCTP_ARRIVED,QC_ALIGNED_START,QC_ALIGNED_FINISHED,RECEIVE_FINISHED,QPB_ARRIVE,QPB_FINISHED,LOCK_ARRIVED,LOCK_FINISHED,HPB_ARRIVE,HPB_FINISHED,CONTAINER_ID_1,CONTAINER_ID_2,TOS_DELIVER_DISPATCH_1,MISSION_DELIVER_DISPATCH_1,TP_ARRIVED_1,TP_ALIGNED_1_START,TP_ALIGNED_1_FINISHED,TP_FINISHED_1,TOS_DELIVER_DISPATCH_2,MISSION_DELIVER_DISPATCH_2,TP_ARRIVED_2,TP_ALIGNED_2_START,TP_ALIGNED_2_FINISHED,TP_FINISHED_2,BATTERY,ALL_TIME,VISIT_ID,SPEED,RECEIVE_MILEAGE,DELIVER_MILEAGE,TASK_TYPE,QCFT_TIME"]
-    # result.append(title)
     for rs in dsch_data:
         if vessel_id in rs:
             rs.insert(0, numb)
@@ -78,7 +76,6 @@ def get_all(start_time, end_time, vessel_id):
             rt.insert(0, numb)
             numb += 1
             result.append(rt)
-
     return result
 
 

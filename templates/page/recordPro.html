@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>treetable</title>
+    <link rel="stylesheet" href="../lib/layui-v2.6.3/css/layui.css">
+</head>
+<body>
+<div class="content">
+    <table class="layui-hide" id="menu" lay-filter="menu"></table>
+</div>
+<script src="/static/lib/jquery-3.4.1/jquery-3.4.1.min.js"></script>
+<script type="text/javascript" src="../lib/layui-v2.6.3/layui.js"></script>
+<div class="layui-btn-container">
+    <button class="layui-btn layui-btn-normal layui-btn-sm data-add-btn" id="addPro" lay-event="add"> 添加问题 </button>
+</div>
+<script>
+    $("#addPro").on("click",function(){
+        var index = layer.open({
+                    title: '添加',
+                    type: 2,
+                    shade: 0.2,
+                    maxmin:true,
+                    shadeClose: true,
+                    area: ['80%', '80%'],
+                    content: '../page/table/editRedis.html',
+                    success:function(layero, index){
+                        var inpk = $(layero).find("iframe").contents().find("#key");
+                        var inpv = $(layero).find("iframe").contents().find("#val");
+                        inpk.val(data.k);
+                        inpv.val(data.v);
+                        console.log(data);
+                    }
+                });
+    });
+</script>
+</body>
+</html>

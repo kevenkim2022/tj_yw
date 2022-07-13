@@ -19,7 +19,7 @@ from ww import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('index/', views.index),
+    path('', views.index),
     path('login/', views.login),
     path('kpi/', views.kpi),
     path('downloadKpi', views.download_kpi),
@@ -28,6 +28,15 @@ urlpatterns = [
     path('getjobs', views.get_jobs),
     path('qcredis', views.qc_redis),
     path('artredis', views.art_redis),
+    path('testj', views.test_js),
+    path('allredis', views.all_redis),
+    path('getrediskeylist', views.get_redis_key),
+    path('recordList', views.my_record),
     path('test', views.test),
-    path('testj', views.test_js)
+    path('addrecord', views.add_record),
+    path('addrecordhtm', views.add_record_htm),
+    path('recorddetailhtm', views.record_detail_htm),
+    path('updaterecord', views.record_update),
+    path('updaterecordhtm', views.record_update_htm),
+    path('searchrecord', views.search_record),
 ]

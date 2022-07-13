@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>layui</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="/static/lib/layui-v2.6.3/css/layui.css" media="all">
+    <script src="/static/lib/jquery-3.4.1/jquery-3.4.1.min.js"></script>
+</head>
+<body>
+<div class="layuimini-container rec_height">
+        <div class="layui-row" style="padding-bottom: 30px;">
+            <div class="layui-input-inline add_button">
+                <button class="layui-btn layui-btn-normal addContent">添加新问题</button>
+            </div>
+            <div class="layui-input-inline">
+                <form action="/searchrecord" method="post">
+                    <div class="layui-input-inline">
+                        <input type="text" name="title" placeholder="输入搜索内容" value="" id="searchContent" class="layui-input">
+                    </div>
+                    <div class="layui-input-inline">
+                        <button class="layui-btn layui-btn-normal addContent" lay-submit lay-filter="saveBtn">搜索问题</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="layui-row" id="layui-row-jcl">
+            <ul>
+                {% for data in datas %}
+                <li class="rec_li">
+                    <div class="myRow">
+                        <div hidden="hidden" name="id" class="myId">{{ data.id }}</div>
+                        <div class="layui-input-inline line-title">
+                            {{ data.title }}
+                        </div>
+                        <div class="layui-input-inline detailLine">
+                            <div class="layui-input-inline">
+                                用户：{{ data.username }}
+                            </div>
+                            <div class="layui-input-inline">
+                                最后更新时间：{{ data.update_time }}
+                            </div>
+                            <div class="layui-input-inline ">
+                                <button class="layui-btn layui-btn-danger recordUpdate" onclick="recordUpdate(this)">修改</button>
+                            </div>
+                            <div class="layui-input-inline ">
+                                <button class="layui-btn recordDetail layui-btn-warm" onclick="recordDetail(this)">查看详情</button>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            {% endfor %}
+            </ul>
+        </div>
+</div>
+<style>
+    #layui-row-jcl{
+        height: 500px;
+        overflow: auto;
+    }
+    .add_button{
+        margin:10px 20px;
+
+    }
+    .line-title{
+        margin-left:30px;
+    }
+    .rec_height{
+        min-height: 500px;
+    }
+    .myRow{
+        padding-top:10px;
+    }
+    .rec_li{
+        position: relative;
+        height:40px;
+        border-bottom: 1px solid #eeeeee;
+    }
+    .recordUpdate{
+        line-height: 0px !important;
+        font-size:12px;
+        height:30px;
+    }
+    .recordDetail{
+        line-height: 0px !important;
+        font-size:12px;
+        height:30px;
+    }
+    .detailLine{
+        position: absolute;
+        top:5px;
+        right: 30px;
+    }
+</style>
+<script src="/static/lib/layui-v2.6.3/layui.js" charset="utf-8"></script>
+<script>
+    function recordUpdate(obj){
+        var id = $(obj).parents(".myRow").find(".myId");
+        var text_id = $(id).text();
+        layer.open({
+                title: '修改问题',
+                type: 2,
+                shade: 0.2,
+                maxmin:true,
+                shadeClose: true,
+                area: ['100%', '100%'],
+                content: '/updaterecordhtm?id='+text_id,
+            });
+    }
+    function recordDetail(obj){
+        var id = $(obj).parents(".myRow").find(".myId");
+        var text_id = $(id).text();
+        layer.open({
+                title: '问题详情',
+                type: 2,
+                shade: 0.2,
+                maxmin:true,
+                shadeClose: true,
+                area: ['100%', '100%'],
+                content: '/recorddetailhtm?id='+text_id,
+            });
+    }
+    layui.use(['form', 'table'], function () {
+        var $ = layui.jquery,
+            form = layui.form,
+            table = layui.table;
+        $(".addContent").on("click",function(){
+            layer.open({
+                title: '添加',
+                type: 2,
+                shade: 0.2,
+                maxmin:true,
+                shadeClose: true,
+                area: ['100%', '100%'],
+                content: '/addrecordhtm',
+                end:function(){
+                    console.log("close")
+                }
+            });
+        });
+    });
+</script>
+
+</body>
+</html>

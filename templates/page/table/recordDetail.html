@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="/static/ckeditor/ckeditor.js"></script>
+    <link rel="stylesheet" href="/static/lib/layui-v2.6.3/css/layui.css" media="all">
+</head>
+<body>
+    <div class="detailContent">
+    {% for data in datas %}
+        <div class="detail_title">
+            <div class="layui-input-inline title">{{ data.title }}</div>
+            <div class="layui-input-inline detail_title_line">
+                <div class="layui-input-inline detail_title_line_user">
+                    录入:
+                    {{ data.username }}
+                </div>
+                <div class="layui-input-inline">
+                    更新时间:{{ data.update_time }}
+                </div>
+            </div>
+        </div>
+        <div class="detail_content">{{ data.content|safe }}</div>
+    {% endfor %}
+    </div>
+</body>
+<style>
+    .detail_content{
+        margin: 30px 20px;
+    }
+    .detail_title_line_user{
+        margin-right: 10px;
+    }
+    .title{
+        font-size:18px;
+        font-weight: bold;
+    }
+    .detail_title{
+        position: relative;
+        border-bottom: 1px solid #eeeeee;
+        padding:10px 0px;
+    }
+    .detail_title_line{
+        position:absolute;
+        right: 10px;
+        top:10px;
+    }
+    .detailContent{
+        width:90%;
+        margin:0 auto;
+        padding:10px;
+    }
+</style>
+</html>

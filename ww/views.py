@@ -1,26 +1,25 @@
-import requests
 from django.db.models import Q
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render
-# Create your views here.
 from ww.myutil.get_kpi import *
 import datetime
 import openpyxl
 from ww import models
+from issue import models as mm
 from django.core.paginator import Paginator
 import json
 from ww.myutil.REDISUtil import my_redis
 from pyecharts.charts import Bar,Grid
 from pyecharts import options as opts
-from pyecharts.globals import ThemeType
-from itertools import groupby
 from pyecharts.commons.utils import JsCode
-def test(request):
-    return render(request, "test.html")
+import re
+
 
 def g(x):
     if int(x['min']) >= 10 and int(x['min']) <=20:
         return 10
+
+
 def test_js(request):
     # data = get_all('2022-07-03 00:00:00', '2022-07-04 13:00:00', 'XINMZ78_02B')
     # titles = ['id','IGV号','TOS收箱任务下发时间','任务下发，单车反馈200','卸船单车到达临停位置','卸船单车离开临停位置','卸船单车到达QCTP-X位','卸船单车到达岸桥','卸船单车开始对位','卸船单车结束对位','卸船单车送箱任务完成','单车到达前PB','单车离开前PB','单车到达锁站','单车装锁完成','单车到达后PB','单车离开后PB','箱号1','箱号2','TOS送箱第一箱任务下发时间','任务下发，单车反馈200','单车第一箱到达第一个TP位置','单车第一段开始对位','单车第一段结束对位','单车第一段送箱任务完成','TOS送箱第二箱任务下发时间','任务下发，单车反馈200','单车到达第二个TP位置','单车第二段开始对位','单车第二段结束对位','单车第二段送箱任务完成','总耗电量','ALL_TIME','船舶ID号','SPEED','收箱里程','送箱里程','Task Type','对位用时']
@@ -91,9 +90,65 @@ def test_js(request):
             )
         )
     )
+
     grid = Grid()
     grid.add(bar, grid_opts=opts.GridOpts(pos_top="0%", pos_bottom="0%", pos_left="0%", pos_right="0%"))
     return HttpResponse(bar.render_embed())
+
+
+def all_redis(request):
+    key = request.GET.get('searchParams')
+    red = my_redis()
+    rs = red.query_all()
+    all_l = list()
+    print(key,'123123')
+    for r in rs:
+        if key is None:
+            all_r = dict()
+            all_r['keys'] = r
+            all_l.append(all_r)
+        else:
+            if re.search(key, r):
+                all_r = dict()
+                all_r['keys'] = r
+                all_l.append(all_r)
+    red.close_redis()
+    context = {"code": 0, "msg": "", "count": len(all_l), "data": all_l}
+    return JsonResponse(context, safe=False)
+
+
+def get_redis_key(request):
+    key = str(request.GET.get('keyParams'))
+    if key is not None:
+        print(key)
+        red = my_redis()
+        rs = red.query_list(key)
+        print(type(rs))
+        r_list = list()
+        cnt = 0
+        if isinstance(rs, dict):
+            for k,v in rs.items():
+                r_dict = dict()
+                r_dict['k'] = k
+                r_dict['v'] = v
+                r_list.append(r_dict)
+                cnt = 2
+        elif isinstance(rs, list):
+            for r in rs:
+                r_dict = dict()
+                print(r[0])
+                r_dict['r'] = rs.index(r)
+                r_dict['k'] = r[0]
+                r_dict['v'] = r[1]
+                r_list.append(r_dict)
+                cnt = 3
+        else:
+            r_dict = dict()
+            r_dict['v'] = rs
+            r_list.append(r_dict)
+        print(r_list)
+    context = {"code": 0, "msg": "", "count": cnt, "data": r_list}
+    return JsonResponse(context, safe=False)
 
 
 def art_redis(request):
@@ -290,12 +345,20 @@ def download_kpi(request):
         ws.cell(1,titles.index(t)+1).value = t
 
     data = get_all(start_time, end_time, v_vid)
+    line_numb = 2
     for line in data:
+        cell_numb = 1
         for d in line:
-            ws.cell(data.index(line)+2, line.index(d)+1).value = d
+            ws.cell(line_numb, cell_numb).value = d
+            cell_numb += 1
+        line_numb += 1
 
     wb.save(response)
     return response
+
+
+def test(request):
+    return render(request, "test.html")
 
 
 def index(request):
@@ -304,16 +367,70 @@ def index(request):
     return render(request, "index.html")
 
 
+def add_record_htm(request):
+    return render(request, "page/table/addContent.html")
+
+
+def my_record(request):
+    datas = mm.lcj_record.objects.all()
+
+    return render(request, "recordList.html", {"datas": datas})
+
+
+def search_record(request):
+    title = request.POST.get("title")
+    datas = mm.lcj_record.objects.filter(title__contains=title)
+    return render(request, "recordList.html", {"datas": datas})
+
+
+def record_detail_htm(request):
+    rc_id = request.GET.get("id")
+    datas = mm.lcj_record.objects.filter(id=rc_id)
+    return render(request, "page/table/recordDetail.html", {"datas": datas})
+
+
+def record_update(request):
+    rtn_msg = {'code': 20000, "msg": "success"}
+    rec_id = int(request.POST.get("id"))
+    title = str(request.POST.get("title"))
+    content = str(request.POST.get("content"))
+
+    update_time = str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+    mm.lcj_record.objects.filter(id=rec_id).update(title=title, content=content, update_time=update_time )
+    return JsonResponse(rtn_msg)
+
+
+def record_update_htm(request):
+    rc_id = request.GET.get("id")
+    datas = mm.lcj_record.objects.get(id=rc_id)
+    data_dict = dict()
+    data_dict['id'] = datas.id
+    data_dict['title'] = datas.title
+    data_dict['content'] = datas.content.replace("\"","\'")
+    return render(request, "page/table/updateContent.html", {"datas": data_dict})
+
+
+def add_record(request):
+    rtn_msg = {'code': 10000, "msg": "success"}
+    username = str(request.POST.get("username"))
+    title = str(request.POST.get("title"))
+    content = str(request.POST.get("content"))
+    create_time = str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+    update_time = str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+    mm.lcj_record.objects.create(username=username, title=title, content=content, create_time=create_time, update_time=update_time )
+    return JsonResponse(rtn_msg)
+
+
 def kpi(request):
     start_time = request.GET.get('start_date')
     end_time = request.GET.get('end_date')
-    title = ["ID","VEHICLE_PLATE","TOS_RECEIVE_DISPATCH","MISSION_RECEIVE_DISPATCH","VPB_ARRIVE","VPB_FINISHED","QCTP_X_ARRIVED","QCTP_ARRIVED","QC_ALIGNED_START","QC_ALIGNED_FINISHED","RECEIVE_FINISHED","QPB_ARRIVE","QPB_FINISHED","LOCK_ARRIVED","LOCK_FINISHED","HPB_ARRIVE","HPB_FINISHED","CONTAINER_ID_1","CONTAINER_ID_2","TOS_DELIVER_DISPATCH_1","MISSION_DELIVER_DISPATCH_1","TP_ARRIVED_1","TP_ALIGNED_1_START","TP_ALIGNED_1_FINISHED","TP_FINISHED_1","TOS_DELIVER_DISPATCH_2","MISSION_DELIVER_DISPATCH_2","TP_ARRIVED_2","TP_ALIGNED_2_START","TP_ALIGNED_2_FINISHED","TP_FINISHED_2","BATTERY","ALL_TIME","VISIT_ID","SPEED","RECEIVE_MILEAGE","DELIVER_MILEAGE","TASK_TYPE","QCFT_TIME"]
+    title = ["ID", "VEHICLE_PLATE","TOS_RECEIVE_DISPATCH", "MISSION_RECEIVE_DISPATCH", "VPB_ARRIVE", "VPB_FINISHED","QCTP_X_ARRIVED","QCTP_ARRIVED","QC_ALIGNED_START","QC_ALIGNED_FINISHED","RECEIVE_FINISHED","QPB_ARRIVE","QPB_FINISHED","LOCK_ARRIVED","LOCK_FINISHED","HPB_ARRIVE","HPB_FINISHED","CONTAINER_ID_1","CONTAINER_ID_2","TOS_DELIVER_DISPATCH_1","MISSION_DELIVER_DISPATCH_1","TP_ARRIVED_1","TP_ALIGNED_1_START","TP_ALIGNED_1_FINISHED","TP_FINISHED_1","TOS_DELIVER_DISPATCH_2","MISSION_DELIVER_DISPATCH_2","TP_ARRIVED_2","TP_ALIGNED_2_START","TP_ALIGNED_2_FINISHED","TP_FINISHED_2","BATTERY","ALL_TIME","VISIT_ID","SPEED","RECEIVE_MILEAGE","DELIVER_MILEAGE","TASK_TYPE","QCFT_TIME"]
     data_list = []
     data = get_all(start_time, end_time, '')
     for da in data:
         line = dict()
         for d in da:
-            line[title[da.index(d)]]=d
+            line[title[da.index(d)]] = d
         print(line)
         data_list.append(line)
     ss = {"code": 0, "msg": "", "count": len(data_list), "data": data_list}

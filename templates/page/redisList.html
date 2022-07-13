@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>layui</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="../lib/layui-v2.6.3/css/layui.css" media="all">
+    <link rel="stylesheet" href="../css/public.css" media="all">
+</head>
+<body>
+<div class="layuimini-container">
+    <div>
+        <input id='searchKey' placeholder="Enter键进行搜索" type='text' style='position: absolute;top: 45px;z-index: 9999;left: 120px;font-size:10px;padding:2px'/>
+    </div>
+    <div class="layuimini-main">
+
+        <script type="text/html" id="toolbarDemo">
+        </script>
+
+        <table class="layui-hide" id="currentTableId" lay-filter="currentTableFilter"></table>
+        <table class="layui-hide" id="currentTableId2" lay-filter="currentTableFilter2"></table>
+        <script type="text/html" id="currentTableBar">
+            <a class="layui-btn layui-btn-normal layui-btn-xs data-count-edit" lay-event="edit">编辑</a>
+            <a class="layui-btn layui-btn-xs layui-btn-danger data-count-delete" lay-event="delete">删除</a>
+        </script>
+
+    </div>
+</div>
+<script src="../lib/layui-v2.6.3/layui.js" charset="utf-8"></script>
+<script src="/static/lib/jquery-3.4.1/jquery-3.4.1.min.js" charset="utf-8"></script>
+<script>
+    $(function(){
+        tt();
+    });
+    function tt(){
+        var ts = $(".layuimini-container").find(".layui-table-view")
+        for(i=0;i<ts.length;i++){
+            if($(ts[i]).attr("lay-id") =="currentTableId2"){
+                $(ts[i]).css("position","absolute");
+                $(ts[i]).css("width","66%");
+                var a = $(ts[i]).find(".layui-table-main");
+                $(a).css("height","500px");
+                $(a).css("overflow","scroll");
+            }else{
+                var a = $(ts[i]).find(".layui-table-main");
+                $(a).css("height","500px");
+                $(a).css("overflow","scroll");
+            }
+        }
+    }
+
+    layui.use(['form', 'table'], function () {
+        var $ = layui.jquery,
+            form = layui.form,
+            table = layui.table;
+
+        table.render({
+            elem: '#currentTableId',
+            url: '/allredis',
+            cols: [[
+                {field: 'keys', title: "keys", sort: true, width:'30%'}
+            ]],
+            limits: [10, 15, 20, 25, 50, 100],
+            limit: 15,
+            page: false,
+            done: function(res,curr,count){
+
+            }
+        });
+        table.render({
+            elem: '#currentTableId2',
+            url: '/getrediskeylist',
+            defaultToolbar: ['filter'],
+            cols: [[
+                {field: 'k',width:200,  title: 'key', sort: true, filter:true},
+                {field: 'v',  title: 'value', sort: true}
+            ]],
+            limits: [10, 15, 20, 25, 50, 100],
+            limit: 15,
+            page: false,
+            skin: 'line'
+        });
+        $('#searchKey').keyup(
+            function(e){
+                console.log(e.which);
+                if(e.which == 13){
+                    var k = $(this).val();
+                    r_key(k);
+                }
+            }
+        );
+        function r_key(key){
+            table.render({
+                elem: '#currentTableId',
+                url: '/allredis',
+                cols: [[
+                    {field: 'keys', title: "keys", sort: true, width:'30%'}
+                ]],
+                limits: [10, 15, 20, 25, 50, 100],
+                limit: 15,
+                page: false,
+                where:{
+                    searchParams: key
+                }
+            });
+            tt();
+        }
+
+        table.on('row(currentTableFilter)', function(obj){
+
+            var keys = obj.data['keys'];
+            //执行搜索重载
+            new_t(keys);
+        });
+        function new_t(keys){
+            table.render({
+            elem: '#currentTableId2',
+            url: '/getrediskeylist',
+            cols: [[]],
+            where: {
+                keyParams: keys
+            },
+            limit: 15,
+            page: false,
+            done: function(res,curr,count){
+                    var mydata = new Array();
+
+                    if(count==2){
+                       // console.log('2');
+                        mydata[0] = {field: 'k', title: 'key', sort: true,width:300};
+                        mydata[1] = {field: 'v', title: 'value', sort: true,width:'33%'};
+                        mydata[2] = {title: '操作', width: 130, toolbar: '#currentTableBar', align: "center"};
+                    }else if(count==3){
+                       // console.log('3');
+                        mydata[0] = {field: 'r', title: 'row', sort: true,width:80};
+                        mydata[1] = {field: 'k', title: 'value', sort: true,width:'25%'};
+                        mydata[2] = {field: 'v', title: 'score', sort: true,width:'25%'};
+                        mydata[3] = {title: '操作', width: 130, toolbar: '#currentTableBar', align: "center"};
+                    }else {
+                        mydata[0] = {field: 'v', title: 'text', sort: true,width:"58%"};
+                        mydata[1] = {title: '操作', width: 130, toolbar: '#currentTableBar', align: "center"};
+                    }
+                    table.init('currentTableFilter2',{
+                       cols:[mydata]
+                       ,data:res.data,
+                        limit:10,
+                        page:false
+                    });
+                    tt();
+                }
+        });
+        }
+        table.on('tool(currentTableFilter2)', function (obj) {
+            var data = obj.data;
+            if (obj.event === 'edit') {
+
+                var index = layer.open({
+                    title: '编辑',
+                    type: 2,
+                    shade: 0.2,
+                    maxmin:true,
+                    shadeClose: true,
+                    area: ['80%', '80%'],
+                    content: '../page/table/editRedis.html',
+                    success:function(layero, index){
+                        var inpk = $(layero).find("iframe").contents().find("#key");
+                        var inpv = $(layero).find("iframe").contents().find("#val");
+                        inpk.val(data.k);
+                        inpv.val(data.v);
+                        console.log(data);
+                    }
+                });
+                $(window).on("resize", function () {
+                    layer.full(index);
+                });
+                return false;
+            } else if (obj.event === 'delete') {
+                layer.confirm('真的删除行么', function (index) {
+                    obj.del();
+                    layer.close(index);
+                });
+            }
+        });
+    });
+</script>
+<style>
+    .layui-table-view{
+        width: 31%;
+        display: inline-block;
+    }
+    .layui-table-cell{
+        font-size:10px !important;
+    }
+    .layui-table-patch{
+        display: none;
+    }
+</style>
+</body>
+</html>
